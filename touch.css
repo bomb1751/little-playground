@@ -1,0 +1,5 @@
+/* Keep long presses on game controls from selecting text or opening image callouts. */
+html,body,body *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,[contenteditable]:not([contenteditable="false"]),[contenteditable]:not([contenteditable="false"]) *{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+img,svg{-webkit-user-drag:none}
+button,a,[role="button"]{touch-action:manipulation}
