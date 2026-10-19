@@ -1,6 +1,7 @@
 const {path:p,ellipse:e,rect:r}=Play;
 const foods={tomato:'番茄',pepper:'甜椒',mushroom:'蘑菇',corn:'玉米',cheese:'起司',olive:'橄欖',patty:'漢堡肉',lettuce:'生菜',onion:'洋蔥',top:'上層麵包',berry:'草莓',blueberry:'藍莓',cream:'奶油花',candle:'小蠟燭',chocolate:'巧克力',sprinkles:'彩色糖粒',sponge:'蛋糕層',pinkCream:'草莓奶油',basil:'小葉子',cheeseStar:'星星起司',vanillaGlaze:'香草奶油夾心',strawberryGlaze:'草莓奶油夾心',chocolateGlaze:'巧克力夾心',pudding:'布丁',peachDice:'水蜜桃丁',orangeDice:'橘子丁',grapeDice:'葡萄丁',orangeSlice:'橘子瓣',greenGrape:'綠葡萄',marshmallowWhite:'白色棉花糖',marshmallowPink:'粉紅棉花糖',marshmallowPurple:'紫色棉花糖',marshmallowMint:'薄荷棉花糖'};
-const dishes={pizza:{name:'披薩',add:['tomato','pepper','mushroom','corn','cheese','olive'],decorate:['basil','cheeseStar','tomato','olive']},cake:{name:'蛋糕',add:['sponge','vanillaGlaze','strawberryGlaze','chocolateGlaze','pudding','peachDice','orangeDice','grapeDice'],decorate:['berry','blueberry','cream','candle','chocolate','sprinkles','orangeSlice','greenGrape','marshmallowWhite','marshmallowPink','marshmallowPurple','marshmallowMint']}};
+Object.assign(foods,{carrotFlower:'胡蘿蔔花',radishHeart:'小蘿蔔愛心',sesame:'芝麻',sugarFlower:'糖花',cookie:'小熊餅乾'});
+const dishes={pizza:{name:'披薩',add:['tomato','pepper','mushroom','corn','cheese','olive'],decorate:['basil','carrotFlower','radishHeart','sesame']},cake:{name:'蛋糕',add:['sponge','vanillaGlaze','strawberryGlaze','chocolateGlaze','pudding','peachDice','orangeDice','grapeDice'],decorate:['berry','blueberry','sugarFlower','candle','cookie','sprinkles','orangeSlice','greenGrape','marshmallowWhite','marshmallowPink','marshmallowPurple','marshmallowMint']}};
 let dish='pizza',mode='free',ingredientKind='add',selected=null,placed=[],order={};
 const scene=document.querySelector('#scene'),hint=document.querySelector('#hint'),dialog=document.querySelector('#celebration');
 function foodArt(key){
@@ -19,19 +20,22 @@ function foodArt(key){
  if(key==='cream')return p('M-22 17Q-30 6 -13 0Q-25 -9 -5 -11Q-9 -22 9 -25Q4 -14 17 -7Q28 0 15 5Q31 12 22 17Z','#fffef7','#d9c9b5')+p('M-13 5Q0 12 15 5','none','#eadfce',2);
  if(key==='candle')return r(-6,-8,12,33,3,'#a496cc')+p('M-5 2L5 -2M-5 14L5 10','none','#fff',3)+p('M0 -32Q-14 -13 0 -10Q14 -13 0 -32Z','#eec366')+p('M0 -22Q-6 -13 0 -12Q6 -13 0 -22Z','#fff2b6');
  if(key==='chocolate')return r(-24,-15,48,31,4,'#765340','#583b2d')+p('M0 -14V15M-23 0H23','none','#ac8363',3);
- if(['peachDice','orangeDice','grapeDice'].includes(key)){
-  const color={peachDice:'#f2b48d',orangeDice:'#f1b44d',grapeDice:'#9c85bb'}[key];
-  return [[-16,-4],[4,-12],[14,8],[-9,13]].map(([x,y])=>r(x-7,y-7,14,14,3,color,'#ffffff66')+p(`M${x-5} ${y-3}H${x+3}`,'none','#ffffff99',2)).join('');
- }
+ if(key==='peachDice')return [[-17,-5],[6,-12],[15,12],[-9,14]].map(([x,y])=>p(`M${x-8} ${y-5}L${x+3} ${y-9}L${x+9} ${y-3}V${y+7}L${x-3} ${y+10}L${x-8} ${y+4}Z`,'#f4c7a1','#e8a083')+p(`M${x-8} ${y-5}L${x-2} ${y+1}L${x+9} ${y-3}M${x-2} ${y+1}V${y+9}`,'none','#ffe5c7',2)).join('');
+ if(key==='orangeDice')return [[-13,-8],[11,-5],[-7,13],[18,14]].map(([x,y],i)=>`<g transform="translate(${x} ${y}) rotate(${i*55})">`+p('M-11 -8L12 -4L2 12Z','#f3b249','#df9638')+p('M-7 -4L7 -2L1 7Z','#ffd185')+p('M-4 -2L1 6M1 -1L2 5','none','#fff0c4',1.4)+'</g>').join('');
+ if(key==='grapeDice')return [[-16,-6],[9,-11],[-9,13],[17,12]].map(([x,y],i)=>`<g transform="translate(${x} ${y}) rotate(${i*65})">`+p('M-10 -8Q15 -12 10 12Q-4 11 -10 -8Z','#9b77b2','#806095')+p('M-6 -6Q10 -9 7 8Q-2 6 -6 -6Z','#d9dbaf')+e(1,0,1.5,2.5,'#b49a81')+'</g>').join('');
+ if(key==='carrotFlower')return Array.from({length:5},(_,i)=>e(Math.cos(i*1.256)*13,Math.sin(i*1.256)*13,10,10,'#ed9b4d','#d78035')).join('')+e(0,0,7,7,'#ffd48b');
+ if(key==='radishHeart')return p('M0 22C-37 -1 -19 -28 0 -10C19 -28 37 -1 0 22Z','#db697d','#b84e67')+p('M0 15C-26 -1 -14 -19 0 -5C14 -19 26 -1 0 15Z','#fff1dd')+p('M0 8L0 -2','none','#e8baba',2);
+ if(key==='sesame')return [[-20,-6],[-4,-13],[14,-6],[-13,10],[5,9],[23,12]].map(([x,y])=>`<g transform="translate(${x} ${y}) rotate(30)">`+e(0,0,2.5,5,'#8d6948')+'</g>').join('');
+ if(key==='sugarFlower')return Array.from({length:6},(_,i)=>e(Math.cos(i*Math.PI/3)*14,Math.sin(i*Math.PI/3)*14,10,9,'#f0b5d1','#cc8eaf')).join('')+e(0,0,8,8,'#f5d77f','#dcba60');
+ if(key==='cookie')return e(-14,-16,10,10,'#d6a469','#b9854c')+e(14,-16,10,10,'#d6a469','#b9854c')+e(0,2,24,23,'#e4b67b','#b9854c')+e(-9,-1,2,3,'#72543d')+e(9,-1,2,3,'#72543d')+e(0,11,10,8,'#f8d7a5')+e(0,7,3,2,'#72543d')+p('M0 9V14M-4 14Q0 18 4 14','none','#72543d',1.5);
  if(key==='pudding')return p('M-19 -13H19L26 15Q0 27 -26 15Z','#f3d279','#caaa58')+e(0,-13,19,6,'#c98b53')+p('M-16 -4L-19 11','none','#fff4bd',3);
  if(key==='orangeSlice')return p('M-25 -8Q-2 -26 24 -8Q13 19 -11 20Z','#ffd78b','#eab151')+p('M-20 -6Q-1 -19 19 -6Q10 13 -9 15Z','#f4b953')+p('M-4 -10L-10 14M-4 -10L9 10M-4 -10L18 -4','none','#fff3cd',2);
  if(key==='greenGrape')return e(0,0,13,16,'#a6c87c','#87aa61')+e(-4,-5,3.5,5,'#d7e8b8');
  if(key.startsWith('marshmallow')){const color={marshmallowWhite:'#fff7ee',marshmallowPink:'#f2c5d5',marshmallowPurple:'#cbb9e2',marshmallowMint:'#b9dfcf'}[key];return r(-13,-18,26,36,9,color,'#ccb9bd')+e(0,-14,10,4,'#ffffff55')+p('M-8 -7V10','none','#ffffffaa',3);}
- if(key==='sponge')return r(-29,-16,58,33,7,'#eac6a1','#cfa980')+p('M-28 -6H28M-28 6H28','none','#fff2d5',4);
- if(['vanillaGlaze','strawberryGlaze','chocolateGlaze'].includes(key)){
-  const color={vanillaGlaze:'#fff5e6',strawberryGlaze:'#f2a8b9',chocolateGlaze:'#936650'}[key];
-  return p('M-27 -1Q-25 23 0 24Q25 23 27 -1Z','#b9d8da','#83a9ae',2)+e(0,-1,27,9,color,'#83a9ae')+p('M6 -7L25 -25','none','#c39b75',5)+e(7,-8,8,4,color)+p('M-16 7Q-8 16 -1 16','none','#fff9',3);
- }
+ if(key==='sponge')return r(-29,-16,58,33,7,'#eac6a1','#cfa980')+[-18,-4,11,22].map((x,i)=>e(x,i%2?7:-6,2,1.5,'#d3a577')).join('');
+ if(key==='vanillaGlaze')return p('M-27 -1Q-25 23 0 24Q25 23 27 -1Z','#b9d8da','#83a9ae',2)+e(0,-1,27,9,'#fff5e6','#83a9ae')+p('M6 -7L25 -25','none','#c39b75',5)+e(7,-8,8,4,'#fff5e6');
+ if(key==='strawberryGlaze')return r(-20,-19,40,44,8,'#efb1c0','#ce819a')+r(-22,-25,44,10,3,'#e785a2','#ce819a')+r(-15,-8,30,24,4,'#fff0df')+e(0,2,7,8,'#e77f94')+p('M-6 -3L0 -8L6 -3','none','#81a773',3);
+ if(key==='chocolateGlaze')return p('M-23 -17H14L19 20Q-2 30 -23 20Z','#91664e','#6c4938')+p('M14 -13Q38 -17 31 2Q28 10 18 7','none','#6c4938',6)+e(-5,-17,18,6,'#be9573','#6c4938')+p('M-18 -3Q-6 -7 4 -2','none','#f0d0a2',3);
  if(key==='pinkCream')return foodArt('cream').replaceAll('#fffef7','#f2a8b9').replaceAll('#eadfce','#df8ea4');
  if(key==='basil')return p('M0 16L1 -11','none','#5e9573',3)+e(-10,-5,14,8,'#82b68b')+e(11,2,14,8,'#70a77a');
  if(key==='cheeseStar')return p('M0 -24L7 -8L26 -6L12 6L16 23L0 14L-16 23L-12 6L-26 -6L-7 -8Z','#f1cc68','#d5aa43',2);
@@ -156,4 +160,18 @@ for(const button of document.querySelectorAll('.tab,.action')){
  button.addEventListener('click',event=>{if(event.isTrusted&&event.detail>0&&performance.now()-lastTouch<700){event.preventDefault();event.stopImmediatePropagation();}},true);
  button.addEventListener('pointerup',event=>{if(event.pointerType==='touch'&&!button.disabled){lastTouch=performance.now();event.preventDefault();button.click();}});
 }
+
+function chefMenuIcon(key){
+ let art='';
+ if(key==='pizza')art=e(0,0,27,23,'#e6b477','#bd8b51')+e(0,0,22,18,'#f3cb73')+e(-8,-5,6,5,'#dc7867')+e(10,7,6,5,'#dc7867')+p('M8 -12L14 -7M-12 10L-6 13','none','#7ba275',3);
+ if(key==='cake')art=e(0,22,32,4,'#b6ced1')+r(-24,-8,48,30,5,'#e9c298','#c79871')+r(-24,2,48,5,0,'#d996ac')+e(0,-8,24,8,'#f7e6c1')+p('M0 -28V-13','none','#b28ac2',5)+e(0,-31,3,5,'#edc261');
+ if(key==='add')art=p('M-29 0Q-23 26 0 26Q23 26 29 0Z','#87bdb4','#679f98')+e(0,0,29,8,'#d6e9cf','#679f98')+p('M7 -6L25 -26','none','#b38a62',5)+e(4,-4,10,5,'#e5bd72')+p('M-17 -27V-11M-25 -19H-9','none','#7da18b',4);
+ if(key==='decorate')art=p('M-19 -25L23 -10L-6 18Z','#eab3cc','#c887aa')+p('M-6 18L-10 29L2 23Z','#9cabc1')+p('M-11 -22L8 -15M-16 -15L0 -9','none','#fff1f6',3)+p('M25 8V24M17 16H33','none','#e9bf69',3);
+ if(key==='free')art=r(-26,-22,52,45,8,'#c3dfcd','#83ad97')+e(-9,-3,9,8,'#edc877')+e(11,7,8,7,'#df91ac')+p('M1 -26L9 -32M22 -22L30 -22','none','#dfb85d',3);
+ if(key==='order')art=r(-23,-27,46,55,5,'#fff4d9','#b99e7e')+r(-10,-31,20,9,3,'#9cc8b7')+p('M-14 -9L-10 -5L-3 -13M-14 9L-10 13L-3 5M4 -9H15M4 9H15','none','#7ca48b',3);
+ return '<span class="menu-icon" aria-hidden="true">'+Play.svg(art,'-40 -38 80 76')+'</span>';
+}
+for(const button of document.querySelectorAll('[data-dish],[data-kind],[data-mode]')){const key=button.dataset.dish||button.dataset.kind||button.dataset.mode,label=button.textContent;button.innerHTML=chefMenuIcon(key)+'<span>'+label+'</span>';}
+
 reset();
+

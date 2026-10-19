@@ -132,7 +132,7 @@ function startTool(event,key){
   equipped=equipped.filter(item=>accessorySlot(item)!==a.slot);equipped.push(key);drawScene();hint.textContent='戴上'+toolNames[key]+'了！還能搭配其他配件，最後按「打扮好了」。';
  }});
 }
-for(let i=0;i<pets.length;i++){const b=document.createElement('button');b.type='button';b.className='tab';b.dataset.pet=i;b.textContent=pets[i].name;b.addEventListener('click',()=>{petIndex=i;reset();});document.querySelector('#petTabs').append(b);}
+for(let i=0;i<pets.length;i++){const b=document.createElement('button');b.type='button';b.className='tab';b.dataset.pet=i;b.innerHTML='<span class="menu-icon" aria-hidden="true">'+({dog:'🐶',cat:'🐱',rabbit:'🐰',bird:'🐦',flamingo:'🦩',zebra:'🦓',panda:'🐼',elephant:'🐘',fox:'🦊'}[pets[i].kind])+'</span><span>'+pets[i].name+'</span>';b.addEventListener('click',()=>{petIndex=i;reset();});document.querySelector('#petTabs').append(b);}
 scene.addEventListener('pointerdown',event=>{if(selected)startTool(event,selected);else hint.textContent='先拿起現在要用的工具喔！';});
 document.querySelector('#finishDress').addEventListener('click',finishDressing);
 document.querySelector('#restart').addEventListener('click',reset);document.querySelector('#nextPet').addEventListener('click',()=>{dialog.close();petIndex=(petIndex+1)%pets.length;reset();});for(const button of document.querySelectorAll('.tab,.action')){

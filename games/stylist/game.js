@@ -240,7 +240,7 @@ for(const category of mainCategories){
  button.addEventListener('click',()=>{activeCategory=category.key==='wear'?(wearKeys.includes(activeCategory)?activeCategory:'shirt'):category.key;closeUpOverride=null;renderAvatar();renderOptions();});document.querySelector('#categories').append(button);
 }
 for(const key of wearKeys){
- const category=categories.find(item=>item.key===key),button=document.createElement('button');button.type='button';button.className='wear-tab';button.dataset.key=key;button.textContent=category.name;
+ const category=categories.find(item=>item.key===key),button=document.createElement('button');button.type='button';button.className='wear-tab';button.dataset.key=key;button.innerHTML='<span class="menu-icon" aria-hidden="true">'+category.icon+'</span><span>'+category.name+'</span>';
  button.addEventListener('click',()=>{activeCategory=key;closeUpOverride=null;renderAvatar();renderOptions();});document.querySelector('#wearTabs').append(button);
 }
 customColor.addEventListener('input',()=>{setPartColor(customColor.value);renderAvatar();document.querySelector('#colorValue').textContent=customColor.value.toUpperCase();document.querySelectorAll('.color-swatch').forEach(button=>{const active=button.dataset.color===customColor.value;button.classList.toggle('selected',active);button.setAttribute('aria-pressed',String(active));});saveLook();status.textContent='這個顏色，是你自己選的！';});
