@@ -2,3 +2,5 @@ body{background:#f0ebfa}.gem-status{display:flex;justify-content:space-between;g
 body{background:#e6f2eb}.gem-status{background:#ecf7ef;color:#527d67}.dashboard{background:#f3faf1}.start{background:#698f7f}.controls button{background:#e1f0e5;color:#4f7961}
 
 @media(max-width:600px) and (orientation:portrait){.game{width:min(100%,calc((100dvh - 276px)*.7 + 12px))}}
+
+@media(max-width:600px) and (orientation:portrait){.game{width:min(100%,calc((100dvh - 340px)*.7 + 12px))}}
