@@ -32,12 +32,10 @@ function netArt(caught=null,wobble=0,id='preview',side=1){
  return a+E(0,0,38,25,'none','#709c8a',4)+P('M-31 -14Q0 -30 31 -14','none','#e5f2dd',2);
 }
 function catchAnimation(n){
- const drop=Math.min(1,n.t/.48),ease=1-(1-drop)**3,lift=Math.max(0,Math.min(1,(n.t-.65)/.38));
- const ny=n.y-116*(1-ease)-30*lift,opacity=n.t<1.12?1:Math.max(0,(1.52-n.t)/.4),scale=1.08-.08*ease;
- const turn=Math.max(0,Math.min(1,(n.t-.58)/.34)),rotation=180*(1-turn),bagShift=31*Math.max(0,Math.min(1,(n.t-.52)/.16));
+ const drop=Math.min(1,n.t/.48),ease=1-(1-drop)**3,ny=n.y-116*(1-ease),scale=1.08-.08*ease,opacity=n.t<.9?1:Math.max(0,(1.3-n.t)/.4);
  let art=netArt(null,0,'catch-'+n.id,n.side);
- if(n.landed&&n.key){const insect=`<g class="net-caught-insect" transform="translate(0 ${bagShift}) rotate(${-rotation}) scale(.39)">${insectArt(n.key)}</g>`;art=art.replace('<rect class="complete-net-mesh"',insect+'<rect class="complete-net-mesh"');}
- return `<g class="catch-net-animation" data-phase="${n.landed?'lifting':'descending'}" opacity="${opacity}" transform="translate(${n.x} ${ny}) scale(${scale})"><g class="net-orientation" transform="rotate(${rotation})">${art}</g></g>`;
+ if(n.landed&&n.key){const depth=31*Math.max(0,Math.min(1,(n.t-.52)/.16)),insect=`<g class="net-caught-insect" transform="translate(0 ${depth}) rotate(180) scale(.39)">${insectArt(n.key)}</g>`;art=art.replace('<rect class="complete-net-mesh"',insect+'<rect class="complete-net-mesh"');}
+ return `<g class="catch-net-animation" data-phase="${n.landed?'caught':'descending'}" opacity="${opacity}" transform="translate(${n.x} ${ny}) scale(${scale})"><g class="net-orientation" transform="rotate(180)">${art}</g></g>`;
 }
 const storage='little-playground.bugs.album';let counts={};try{const value=JSON.parse(sessionStorage.getItem(storage)||'{}');for(const k of kinds)if(Number.isInteger(value?.[k.key])&&value[k.key]>0)counts[k.key]=value[k.key];}catch{}
 let bugs=[],active=null,nets=[],pointer=null,sceneCountdown=0,time=0,last=null,flash=0,netSerial=0;
@@ -74,9 +72,12 @@ function moveInsect(b,dt){
  if(b.moveT===1)b.rest=.35+Math.random()*(flying?1.2:1.8);
 }
 function capture(key){const bug=bugs.find(b=>b.key===key);if(!bug)return;const kind=kinds.find(k=>k.key===key);active=kind;const first=!counts[key];counts[key]=(counts[key]||0)+1;try{sessionStorage.setItem(storage,JSON.stringify(counts));}catch{}bugs=bugs.filter(b=>b.key!==key);flash=1.3;visits++;if(visits%3===0)sceneCountdown=1.8;$('portrait').innerHTML=Play.svg(insectArt(key),'-48 -48 96 96',kind.name);$('discovery').textContent=first?'新朋友！':'又見面了！';$('bugName').textContent=kind.name;$('fact').textContent=kind.fact;$('hint').textContent='找到'+kind.name+'了！繼續點下一隻昆蟲。';updateAlbum();draw();}
-function tapAt(point,key=null){if(!point.inside)return;const available=bugs.filter(b=>!nets.some(n=>n.key===b.key));const target=key?available.find(b=>b.key===key):available.sort((a,b)=>Math.hypot(a.x-point.x,a.y-point.y)-Math.hypot(b.x-point.x,b.y-point.y))[0];const hit=target&&(key||Math.hypot(target.x-point.x,target.y-point.y)<23)?target:null;nets.push({x:hit?hit.x:point.x,y:hit?hit.y:point.y,id:++netSerial,t:0,key:hit?.key||null,landed:false,side:(hit?hit.x:point.x)>240?-1:1});if(!hit)$('hint').textContent='網子撲空了！仔細看看花葉上哪裡有小昆蟲。';draw();}
-$('garden').addEventListener('click',e=>{const insect=e.target.closest('[data-bug]'),key=insect?.dataset.bug,bug=key?bugs.find(b=>b.key===key):null;tapAt(bug?{x:bug.x,y:bug.y,inside:true}:Play.point($('garden'),e.clientX,e.clientY),key);});
+function tapAt(point,key=null){if(!point.inside||key&&nets.some(n=>n.key===key))return;const available=bugs.filter(b=>!nets.some(n=>n.key===b.key));const target=key?available.find(b=>b.key===key):available.sort((a,b)=>Math.hypot(a.x-point.x,a.y-point.y)-Math.hypot(b.x-point.x,b.y-point.y))[0];const hit=target&&(key||Math.hypot(target.x-point.x,target.y-point.y)<23)?target:null;nets.push({x:hit?hit.x:point.x,y:hit?hit.y:point.y,id:++netSerial,t:0,key:hit?.key||null,landed:false,side:(hit?hit.x:point.x)>240?-1:1});if(!hit)$('hint').textContent='網子撲空了！仔細看看花葉上哪裡有小昆蟲。';draw();}
+function pressGarden(e){const insect=e.target.closest('[data-bug]'),key=insect?.dataset.bug,bug=key?bugs.find(b=>b.key===key):null;tapAt(bug?{x:bug.x,y:bug.y,inside:true}:Play.point($('garden'),e.clientX,e.clientY),key);}
+// Lock the moving insect on finger-down, before animation or movement can replace its SVG.
+$('garden').addEventListener('pointerdown',e=>{if(!e.isPrimary||e.button!==0)return;e.preventDefault();pressGarden(e);});
+$('garden').addEventListener('click',e=>{if(e.detail===0)pressGarden(e);});
 $('garden').addEventListener('keydown',e=>{const key=e.target.closest('[data-bug]')?.dataset.bug;if(key&&(e.key==='Enter'||e.key===' ')){e.preventDefault();const bug=bugs.find(b=>b.key===key);if(bug)tapAt({...bug,inside:true},key);}});
 function changeScenery(){nets=[];sceneCountdown=0;seed(true);$('hint').textContent=sceneData.name+'：點點花葉和樹幹上的小昆蟲吧！';draw();}
 $('shuffle').onclick=changeScenery;
-$('portrait').innerHTML=Play.svg(netArt(),'-55 -112 125 190');seed();updateAlbum();function tick(now){const dt=last===null?0:Math.min((now-last)/1000,.05);last=now;if(!document.hidden){time+=dt;for(const b of bugs)moveInsect(b,dt);for(const n of nets){n.t+=dt;if(!n.landed&&n.t>=.52){n.landed=true;if(n.key)capture(n.key);}}nets=nets.filter(n=>n.t<1.52);if(sceneCountdown>0){sceneCountdown=Math.max(0,sceneCountdown-dt);if(sceneCountdown===0&&nets.length===0)changeScenery();else if(sceneCountdown===0)sceneCountdown=.05;}flash=Math.max(0,flash-dt);draw();}requestAnimationFrame(tick);}requestAnimationFrame(tick);
+$('portrait').innerHTML=Play.svg(netArt(),'-55 -112 125 190');seed();updateAlbum();function tick(now){const dt=last===null?0:Math.min((now-last)/1000,.05);last=now;if(!document.hidden){time+=dt;for(const b of bugs)moveInsect(b,dt);for(const n of nets){n.t+=dt;if(!n.landed&&n.t>=.52){n.landed=true;if(n.key)capture(n.key);}}nets=nets.filter(n=>n.t<1.3);if(sceneCountdown>0){sceneCountdown=Math.max(0,sceneCountdown-dt);if(sceneCountdown===0&&nets.length===0)changeScenery();else if(sceneCountdown===0)sceneCountdown=.05;}flash=Math.max(0,flash-dt);draw();}requestAnimationFrame(tick);}requestAnimationFrame(tick);
