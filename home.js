@@ -23,6 +23,7 @@ const games = [
 {title:'三車道小車手',category:'反應挑戰 · 左右閃躲',description:'左右換道避開車輛，挑戰能撐幾秒！最高紀錄保留在本次分頁。',href:'games/traffic/',image:'images/traffic.svg',action:'開始出發',mode:'鍵盤 / 觸控 · 挑戰紀錄'},
 {title:'彩虹寶石收集',category:'收集挑戰 · 彩色寶石',description:'在水晶森林裡跑步，接住彩色寶石，挑戰 60 秒收集紀錄！',href:'games/gems/',image:'images/gems.svg?v=23',action:'開始收集',mode:'鍵盤 / 觸控 · 收集紀錄'},
 {title:'小貓釣魚',category:'釣魚挑戰 · 海洋時光',description:'陪小貓出海，移動魚鉤、拉竿甩魚入簍！好魚補元氣，小心河豚和垃圾。',href:'games/fishing/',image:'images/fishing.svg?v=29',action:'開始釣魚',mode:'大按鈕 / 拖曳 · 手機平板都能玩'},
+{title:'小小昆蟲探險家',category:'自然探索 · 花園朋友',description:'拖曳捕蟲網，找蝴蝶、瓢蟲和獨角仙，觀察八種小昆蟲並收集圖鑑！',href:'games/bugs/',image:'images/bugs.svg?v=30',action:'開始探險',mode:'拖曳捕捉 · 沒有倒數'},
 {
     title: '小小造型師',
     category: '自由創作 · 色彩搭配',
