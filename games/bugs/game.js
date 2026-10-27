@@ -34,7 +34,10 @@ function netArt(caught=null,wobble=0,id='preview',side=1){
 function catchAnimation(n){
  const drop=Math.min(1,n.t/.48),ease=1-(1-drop)**3,lift=Math.max(0,Math.min(1,(n.t-.65)/.38));
  const ny=n.y-116*(1-ease)-30*lift,opacity=n.t<1.12?1:Math.max(0,(1.52-n.t)/.4),scale=1.08-.08*ease;
- return `<g class="catch-net-animation" data-phase="${n.landed?'lifting':'descending'}" opacity="${opacity}" transform="translate(${n.x} ${ny}) scale(${scale})">${netArt(n.landed?n.key:null,n.landed?Math.sin(n.t*17)*2:0,'catch-'+n.id,n.side)}</g>`;
+ const turn=Math.max(0,Math.min(1,(n.t-.58)/.34)),rotation=180*(1-turn),bagShift=turn<.5?-18:31;
+ let art=netArt(null,0,'catch-'+n.id,n.side);
+ if(n.landed&&n.key){const insect=`<g class="net-caught-insect" transform="translate(0 ${bagShift}) rotate(${-rotation}) scale(.39)">${insectArt(n.key)}</g>`;art=art.replace('<rect class="complete-net-mesh"',insect+'<rect class="complete-net-mesh"');}
+ return `<g class="catch-net-animation" data-phase="${n.landed?'lifting':'descending'}" opacity="${opacity}" transform="translate(${n.x} ${ny}) scale(${scale})"><g class="net-orientation" transform="rotate(${rotation})">${art}</g></g>`;
 }
 const storage='little-playground.bugs.album';let counts={};try{const value=JSON.parse(sessionStorage.getItem(storage)||'{}');for(const k of kinds)if(Number.isInteger(value?.[k.key])&&value[k.key]>0)counts[k.key]=value[k.key];}catch{}
 let bugs=[],active=null,nets=[],pointer=null,sceneCountdown=0,time=0,last=null,flash=0,netSerial=0;
