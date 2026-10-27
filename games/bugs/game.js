@@ -23,19 +23,23 @@ function insectArt(key,phase=0){let a='',ink='#56634a',wing=Math.sin(phase)*8;
  if(key==='ant')a=legs('#976f58')+E(0,20,12,15,'#a77a5b','#805b48')+E(0,0,7,8,'#a77a5b')+E(0,-19,12,12,'#b68a67','#805b48')+antenna('#976f58')+E(-5,-22,2,2,'#fff0cf')+E(5,-22,2,2,'#fff0cf');
  return a;
 }
-function netArt(caught=null,wobble=0,id='preview',side=1){
+function netArt(caught=null,wobble=0,id='preview',side=1,withHandle=true){
  const bagPath='M-38 0C-36 31 -21 61 3 64C30 61 38 30 38 0Q0 21 -38 0Z',meshId='mesh-'+id,clipId='bag-'+id;
  const defs=`<defs><pattern id="${meshId}" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M0 0L7 7M7 0L0 7" fill="none" stroke="#719e8d" stroke-opacity=".65" stroke-width=".8"/></pattern><clipPath id="${clipId}"><ellipse cx="0" cy="0" rx="38" ry="25"/><path d="${bagPath}"/></clipPath></defs>`;
- let a=defs+P(`M${side*19} -17L${side*52} -105`,'none','#94764f',9)+P(`M${side*19} -17L${side*52} -105`,'none','#cfaa77',6)+P(`M${side*45} -85L${side*52} -105`,'none','#a17d55',11)+E(0,0,38,25,'#edf9e9bb')+P(bagPath,'#f7fcf1bb','#9cbaa7',1.6);
+ let a=defs+(withHandle?P(`M${side*19} -17L${side*52} -105`,'none','#94764f',9)+P(`M${side*19} -17L${side*52} -105`,'none','#cfaa77',6)+P(`M${side*45} -85L${side*52} -105`,'none','#a17d55',11):'')+E(0,0,38,25,'#edf9e9bb')+P(bagPath,'#f7fcf1bb','#9cbaa7',1.6);
  if(caught)a+=`<g class="net-caught-insect" transform="translate(${wobble} 31) rotate(${wobble*2}) scale(.39)">${insectArt(caught)}</g>`;
  a+=`<rect class="complete-net-mesh" x="-40" y="-27" width="80" height="94" fill="url(#${meshId})" clip-path="url(#${clipId})"/>`;
  return a+E(0,0,38,25,'none','#709c8a',4)+P('M-31 -14Q0 -30 31 -14','none','#e5f2dd',2);
 }
 function catchAnimation(n){
- const drop=Math.min(1,n.t/.48),ease=1-(1-drop)**3,ny=n.y-116*(1-ease),scale=1.08-.08*ease,opacity=n.t<.9?1:Math.max(0,(1.3-n.t)/.4);
- let art=netArt(null,0,'catch-'+n.id,n.side);
- if(n.landed&&n.key){const depth=31*Math.max(0,Math.min(1,(n.t-.52)/.16)),insect=`<g class="net-caught-insect" transform="translate(0 ${depth}) rotate(180) scale(.39)">${insectArt(n.key)}</g>`;art=art.replace('<rect class="complete-net-mesh"',insect+'<rect class="complete-net-mesh"');}
- return `<g class="catch-net-animation" data-phase="${n.landed?'caught':'descending'}" opacity="${opacity}" transform="translate(${n.x} ${ny}) scale(${scale})"><g class="net-orientation" transform="rotate(180)">${art}</g></g>`;
+ // The near net and grip enter from the player's lower-right foreground.
+ const reach=Math.min(1,n.t/.48),ease=1-(1-reach)**2,arc=Math.sin(reach*Math.PI),nx=340+(n.x-340)*ease+n.side*arc*20,ny=414+(n.y-414)*ease-arc*17;
+ const scale=1.8-.8*ease,depth=.68+.32*ease,tilt=(n.x-240)/240*12-arc*13,opacity=n.t<.9?1:Math.max(0,(1.3-n.t)/.4);
+ let art=netArt(null,0,'catch-'+n.id,n.side,false);
+ if(n.landed&&n.key){const distance=31*Math.max(0,Math.min(1,(n.t-.52)/.16)),insect=`<g class="net-caught-insect" transform="translate(0 ${distance}) rotate(${-180-tilt}) scale(.39)">${insectArt(n.key)}</g>`;art=art.replace('<rect class="complete-net-mesh"',insect+'<rect class="complete-net-mesh"');}
+ const rod=P(`M${nx+7*scale} ${ny+23*scale*depth}L400 347`,'none','#94764f',8)+P(`M${nx+7*scale} ${ny+23*scale*depth}L400 347`,'none','#d4b484',5);
+ const hand=`<g class="player-hand" transform="translate(400 347) rotate(-23)">`+P('M-7 13L-6 49L21 49L18 8Z','#e9bc96')+R(-11,-7,28,28,9,'#f1cba6')+R(-16,-3,11,20,5,'#e8b68f')+R(-6,-12,7,17,3,'#f4d2af')+R(1,-13,7,18,3,'#f4d2af')+R(8,-10,7,15,3,'#f0c7a0')+R(-8,24,31,21,4,'#8faf9b')+P('M-3 28H19','none','#c3d5bb',2)+'</g>';
+ return `<g class="catch-net-animation" data-phase="${n.landed?'caught':'reaching'}" opacity="${opacity}">${rod}<g class="net-reach" transform="translate(${nx} ${ny}) scale(${scale} ${scale*depth})"><g class="net-orientation" transform="rotate(${180+tilt})">${art}</g></g>${hand}</g>`;
 }
 const storage='little-playground.bugs.album';let counts={};try{const value=JSON.parse(sessionStorage.getItem(storage)||'{}');for(const k of kinds)if(Number.isInteger(value?.[k.key])&&value[k.key]>0)counts[k.key]=value[k.key];}catch{}
 let bugs=[],active=null,nets=[],pointer=null,sceneCountdown=0,time=0,last=null,flash=0,netSerial=0;
